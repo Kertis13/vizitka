@@ -184,6 +184,71 @@
     }
     .projekt p { font-size: 14px; color: var(--barva-textu-jemna); }
 
+
+    /* Než zavoláte na IT */
+    .rady {
+      margin-top: 40px;
+      background: var(--barva-karty);
+      border-radius: var(--zaobleni);
+      box-shadow: 0 10px 40px rgba(30, 30, 60, 0.08);
+      overflow: hidden;
+      animation: priplouti 0.6s ease 0.25s both;
+    }
+    .rady-hlavicka {
+      background: linear-gradient(135deg, var(--barva-akcent), var(--barva-akcent-tmava));
+      color: #fff;
+      padding: 18px 26px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .rady-hlavicka .tecky { display: flex; gap: 6px; }
+    .rady-hlavicka .tecky span { width: 11px; height: 11px; border-radius: 50%; background: rgba(255,255,255,0.45); }
+    .rady-hlavicka h2 { font-size: 20px; margin: 0; }
+    .rady-telo { padding: 22px 26px 26px; }
+    .rady-telo > p { color: var(--barva-textu-jemna); font-size: 15px; margin-bottom: 16px; }
+    .rady ol { list-style: none; counter-reset: krok; display: grid; gap: 12px; }
+    .rady li {
+      counter-increment: krok;
+      display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start;
+      font-size: 15px;
+    }
+    .rady li::before {
+      content: counter(krok);
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--barva-pozadi); color: var(--barva-akcent);
+      font-weight: 700; display: flex; align-items: center; justify-content: center;
+    }
+    .rady li strong { display: block; }
+    .rady li span { color: var(--barva-textu-jemna); font-size: 14px; }
+    .rady .zaver {
+      margin-top: 18px; padding: 14px 18px;
+      background: var(--barva-pozadi); border-radius: 12px; font-size: 14px;
+    }
+
+
+    /* Létající ASCII čísílka v okně rad */
+    .rady-telo { position: relative; overflow: hidden; }
+    .rady-telo > *:not(.cisilka) { position: relative; z-index: 1; }
+    .cisilka { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+    .cisilka span {
+      position: absolute;
+      bottom: -30px;
+      font-family: "Consolas", "Courier New", monospace;
+      font-weight: 700;
+      color: var(--barva-akcent);
+      opacity: 0;
+      animation: let linear infinite;
+      user-select: none;
+    }
+    @keyframes let {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+      10%  { opacity: var(--pruhlednost); }
+      90%  { opacity: var(--pruhlednost); }
+      100% { transform: translateY(-520px) rotate(25deg); opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cisilka { display: none; }
+    }
+
     @keyframes priplouti {
       from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -246,6 +311,25 @@
       </div>
     </section>
 
+
+    <section class="rady" id="nez-zavolate">
+      <div class="rady-hlavicka">
+        <div class="tecky"><span></span><span></span><span></span></div>
+        <h2>Než zavoláte na IT</h2>
+      </div>
+      <div class="rady-telo">
+        <p>Spoustu potíží vyřešíte za pár minut sami. Zkuste prosím nejdřív tohle:</p>
+        <ol>
+          <li><div><strong>Restartujte počítač</strong><span>Opravdu restart, ne jen zavření víka. Vyřeší překvapivě mnoho.</span></div></li>
+          <li><div><strong>Zkontrolujte kabely a napájení</strong><span>Je zapojený monitor, síťový kabel, tiskárna? Svítí, co svítit má?</span></div></li>
+          <li><div><strong>Nejde internet nebo Wi-Fi?</strong><span>Zkuste, jestli funguje kolegům. Pokud ne, restartujte router, pokud ano, odpojte se a znovu připojte.</span></div></li>
+          <li><div><strong>Netiskne tiskárna?</strong><span>Vypněte ji a zapněte, zkontrolujte papír a jestli je vybraná ta správná tiskárna.</span></div></li>
+          <li><div><strong>Vyfoťte chybovou hlášku</strong><span>Klávesy Win+Shift+S a výřez obrazovky. Hodně mi to usnadní pomoc.</span></div></li>
+        </ol>
+        <div class="zaver">Nepomohlo nic z toho? Pak se mi rovnou ozvěte, rád vám pomohu. Ke zprávě prosím přiložte popis potíže a screenshot.</div>
+      </div>
+    </section>
+
     <section class="kontakt">
       <a class="tlacitko" href="mailto:tomas.kertesz@anesys.cz">Napište mi</a>
     </section>
@@ -254,6 +338,36 @@
   <footer class="paticka">
     Vyrobeno vlastními slovy v Claude Code
   </footer>
+
+
+  <script>
+    // Létající průhledná čísílka v okně „Než zavoláte na IT"
+    (function () {
+      var telo = document.querySelector('.rady-telo');
+      if (!telo) return;
+      var vrstva = document.createElement('div');
+      vrstva.className = 'cisilka';
+      vrstva.setAttribute('aria-hidden', 'true');
+      telo.prepend(vrstva);
+      var znaky = '01';
+      for (var i = 0; i < 26; i++) {
+        var z = document.createElement('span');
+        z.textContent = znaky[Math.floor(Math.random() * znaky.length)];
+        z.style.left = (Math.random() * 100) + '%';
+        z.style.fontSize = (14 + Math.random() * 22) + 'px';
+        z.style.animationDuration = (7 + Math.random() * 9) + 's';
+        z.style.animationDelay = (-Math.random() * 16) + 's';
+        z.style.setProperty('--pruhlednost', (0.06 + Math.random() * 0.12).toFixed(2));
+        vrstva.appendChild(z);
+      }
+      // čísílka se za letu mění
+      setInterval(function () {
+        var vse = vrstva.children;
+        var n = vse[Math.floor(Math.random() * vse.length)];
+        n.textContent = znaky[Math.floor(Math.random() * znaky.length)];
+      }, 300);
+    })();
+  </script>
 
 </body>
 </html>
