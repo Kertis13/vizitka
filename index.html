@@ -249,6 +249,18 @@
       .cisilka { display: none; }
     }
 
+
+    /* Osobnost po kliknutí zavibruje */
+    .osobnost { cursor: pointer; }
+    .osobnost.vibruje { animation: vibrace 0.06s linear infinite; }
+    @keyframes vibrace {
+      0%   { transform: rotate(20deg) translate(0, 0); }
+      25%  { transform: rotate(23deg) translate(-2px, 1px); }
+      50%  { transform: rotate(17deg) translate(2px, -1px); }
+      75%  { transform: rotate(22deg) translate(-1px, -1px); }
+      100% { transform: rotate(20deg) translate(0, 0); }
+    }
+
     @keyframes priplouti {
       from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -366,6 +378,55 @@
         var n = vse[Math.floor(Math.random() * vse.length)];
         n.textContent = znaky[Math.floor(Math.random() * znaky.length)];
       }, 300);
+    })();
+  </script>
+
+
+  <script>
+    // Klik na osobnost: 5 vteřin bzučí a vibruje (druhým klikem se dá zastavit)
+    (function () {
+      var o = document.querySelector('.osobnost');
+      if (!o) return;
+      var zvuk = null, casovac = null;
+
+      function zastav() {
+        o.classList.remove('vibruje');
+        if (navigator.vibrate) navigator.vibrate(0);
+        if (zvuk) {
+          var z = zvuk; zvuk = null;
+          z.hlasitost.gain.setTargetAtTime(0, z.kontext.currentTime, 0.05);
+          setTimeout(function () { z.kontext.close(); }, 300);
+        }
+        clearTimeout(casovac);
+      }
+
+      function spust() {
+        o.classList.add('vibruje');
+        if (navigator.vibrate) navigator.vibrate(5000);
+        var Kontext = window.AudioContext || window.webkitAudioContext;
+        if (Kontext) {
+          var kontext = new Kontext();
+          var ton = kontext.createOscillator();
+          var chveni = kontext.createOscillator();
+          var hloubkaChveni = kontext.createGain();
+          var hlasitost = kontext.createGain();
+          ton.type = 'sawtooth';
+          ton.frequency.value = 110;          /* hluboké bzučení */
+          chveni.frequency.value = 18;        /* jemné chvění tónu */
+          hloubkaChveni.gain.value = 6;
+          chveni.connect(hloubkaChveni).connect(ton.frequency);
+          hlasitost.gain.value = 0;
+          hlasitost.gain.setTargetAtTime(0.08, kontext.currentTime, 0.05);
+          ton.connect(hlasitost).connect(kontext.destination);
+          ton.start(); chveni.start();
+          zvuk = { kontext: kontext, hlasitost: hlasitost };
+        }
+        casovac = setTimeout(zastav, 5000);
+      }
+
+      o.addEventListener('click', function () {
+        if (o.classList.contains('vibruje')) zastav(); else spust();
+      });
     })();
   </script>
 
