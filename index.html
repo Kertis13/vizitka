@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tomáš | osobní vizitka</title>
+  <style>
+    /* ================================================
+       BARVY A PÍSMO
+       Tady se dá stránka přebarvit jednou úpravou.
+       ================================================ */
+    :root {
+      --barva-akcent: #3a4147;        /* hlavní barva stránky */
+      --barva-akcent-tmava: #1f2326;  /* tmavší odstín hlavní barvy */
+      --barva-pozadi: #f4f5f6;        /* pozadí celé stránky */
+      --barva-karty: #ffffff;         /* pozadí karet */
+      --barva-textu: #2d3138;         /* běžný text */
+      --barva-textu-jemna: #6b7280;   /* vedlejší text */
+      --zaobleni: 20px;               /* kulatost rohů */
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--barva-pozadi);
+      color: var(--barva-textu);
+      line-height: 1.6;
+      min-height: 100vh;
+      zoom: 1.15;               /* celá stránka o kus větší */
+    }
+
+    /* Horní barevný pruh s jemným přechodem */
+    .hlavicka {
+      background: linear-gradient(135deg, var(--barva-akcent), var(--barva-akcent-tmava));
+      padding: 72px 24px 120px;
+      text-align: center;
+      color: #fff;
+    }
+
+    .avatar {
+      width: 104px;
+      height: 104px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.18);
+      border: 3px solid rgba(255, 255, 255, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 46px;
+      margin: 0 auto 20px;
+    }
+
+    .hlavicka h1 {
+      font-size: clamp(28px, 5vw, 42px);
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .hlavicka .role {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+
+    /* Obsah překrývá barevný pruh */
+    .obsah {
+      max-width: 760px;
+      margin: -64px auto 0;
+      padding: 0 24px 64px;
+    }
+
+    .karta {
+      background: var(--barva-karty);
+      border-radius: var(--zaobleni);
+      padding: 32px;
+      box-shadow: 0 10px 40px rgba(30, 30, 60, 0.08);
+      animation: priplouti 0.6s ease both;
+    }
+
+    .karta.uvod { text-align: center; }
+
+    .karta.uvod p {
+      font-size: 17px;
+      color: var(--barva-textu-jemna);
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    /* Tři dlaždice „co dělám" */
+    .dlazdice {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .dlazdice .polozka {
+      background: var(--barva-karty);
+      border-radius: var(--zaobleni);
+      padding: 24px;
+      box-shadow: 0 6px 24px rgba(30, 30, 60, 0.06);
+      animation: priplouti 0.6s ease 0.15s both;
+    }
+
+    .polozka .ikona { font-size: 30px; margin-bottom: 10px; }
+
+    .polozka h3 { font-size: 16px; margin-bottom: 6px; }
+
+    .polozka p { font-size: 14px; color: var(--barva-textu-jemna); }
+
+    /* Kontakt */
+    .kontakt {
+      text-align: center;
+      margin-top: 32px;
+      animation: priplouti 0.6s ease 0.3s both;
+    }
+
+    .tlacitko {
+      display: inline-block;
+      background: var(--barva-akcent);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 14px 36px;
+      border-radius: 999px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 8px 24px rgba(31, 35, 38, 0.35);
+    }
+
+    .tlacitko:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(31, 35, 38, 0.45);
+    }
+
+    .paticka {
+      text-align: center;
+      padding: 24px;
+      font-size: 13px;
+      color: var(--barva-textu-jemna);
+    }
+
+
+    /* Osobnost na hlavě (na přání majitele) */
+    .avatar { position: relative; }
+    .osobnost {
+      position: absolute;
+      top: -30px;
+      left: 46px;
+      width: 18px;
+      height: 46px;
+      background: linear-gradient(90deg, #ff7eb9, #ff4fa3);
+      border-radius: 9px 9px 4px 4px;
+      transform: rotate(20deg);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+    .osobnost::after {
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      left: -5px;
+      width: 28px;
+      height: 9px;
+      background: #e83e8c;
+      border-radius: 5px;
+    }
+
+
+    /* Moje projekty */
+    .projekty { margin-top: 40px; animation: priplouti 0.6s ease 0.2s both; }
+    .projekty h2 { text-align: center; font-size: 24px; margin-bottom: 20px; }
+    .projekt {
+      background: var(--barva-karty);
+      border-radius: var(--zaobleni);
+      padding: 22px 26px;
+      box-shadow: 0 6px 24px rgba(30, 30, 60, 0.06);
+      border-left: 5px solid var(--barva-akcent);
+      margin-bottom: 14px;
+    }
+    .projekt h3 { font-size: 17px; margin-bottom: 4px; }
+    .projekt .stitek {
+      display: inline-block; font-size: 12px; font-weight: 600;
+      background: var(--barva-pozadi); color: var(--barva-akcent);
+      padding: 2px 10px; border-radius: 999px; margin-bottom: 8px;
+    }
+    .projekt p { font-size: 14px; color: var(--barva-textu-jemna); }
+
+    @keyframes priplouti {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="hlavicka">
+    <div class="avatar">🐴<span class="osobnost" aria-hidden="true"></span></div>
+    <h1>Tomáš</h1>
+    <p class="role">Dělám kus poctivé „koniny" v Anesysu</p>
+  </header>
+
+  <main class="obsah">
+    <section class="karta uvod">
+      <p>
+        V Anesysu se starám o IT našich zákazníků a pomáhám jim s ním jako konzultant.
+        Mým cílem je, aby technika fungovala spolehlivě a vy se mohli věnovat své práci,
+        ne počítačům. Když něco nefunguje nebo plánujete změnu, rád s vámi proberu
+        nejlepší řešení.
+      </p>
+    </section>
+
+    <section class="dlazdice">
+      <div class="polozka">
+        <div class="ikona">🚀</div>
+        <h3>Co dělám</h3>
+        <p>Sem přijde první věc, kterou umíte. Řekněte Claudovi, ať ji doplní.</p>
+      </div>
+      <div class="polozka">
+        <div class="ikona">💡</div>
+        <h3>Na čem pracuju</h3>
+        <p>Projekt, kampaň nebo cokoliv, čím se právě zabýváte.</p>
+      </div>
+      <div class="polozka">
+        <div class="ikona">☕</div>
+        <h3>Co mě baví</h3>
+        <p>Něco lidského na závěr. Stránky s osobností fungují nejlíp.</p>
+      </div>
+    </section>
+
+
+    <section class="projekty">
+      <h2>Moje projekty</h2>
+      <div class="projekt">
+        <span class="stitek">Probíhá</span>
+        <h3>Krocení IT v Anesysu</h3>
+        <p>Aby počítače, tiskárny a lidé vycházeli spolu v míru. Většinou se to daří.</p>
+      </div>
+      <div class="projekt">
+        <span class="stitek">Učím se</span>
+        <h3>Vibe coding s Claudem</h3>
+        <p>Tvořím weby a nástroje obyčejnou češtinou. Tahle vizitka je první důkaz.</p>
+      </div>
+      <div class="projekt">
+        <span class="stitek">V plánu</span>
+        <h3>Interní nástroj pro kolegy</h3>
+        <p>Malá aplikace, která ušetří čas na rutinní práci. Detaily brzy.</p>
+      </div>
+    </section>
+
+    <section class="kontakt">
+      <a class="tlacitko" href="mailto:tomas.kertesz@anesys.cz">Napište mi</a>
+    </section>
+  </main>
+
+  <footer class="paticka">
+    Vyrobeno vlastními slovy v Claude Code
+  </footer>
+
+</body>
+</html>
