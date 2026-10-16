@@ -261,6 +261,84 @@
       100% { transform: rotate(20deg) translate(0, 0); }
     }
 
+
+    /* Nuly a jedničky i v antracitové hlavičce */
+    .hlavicka { position: relative; overflow: hidden; }
+    .hlavicka > *:not(.cisilka) { position: relative; z-index: 1; }
+    .hlavicka .cisilka span { color: #ffffff; }
+
+
+    /* Bajtík: originální postavička, prochází se po spodku stránky */
+    .bajtik {
+      position: fixed;
+      bottom: 8px;
+      left: 0;
+      width: 90px;
+      height: 110px;
+      z-index: 50;
+      cursor: pointer;
+      animation: prochazka 48s linear infinite;
+    }
+    .bajtik .telo { overflow: visible; width: 100%; height: 100%; animation: houpani 0.95s ease-in-out infinite; }
+    .bajtik .noha-l { transform-origin: 38px 88px; animation: krok 0.95s ease-in-out infinite; }
+    .bajtik .noha-p { transform-origin: 52px 88px; animation: krok 0.95s ease-in-out infinite reverse; }
+    .bajtik .zar { opacity: 0.85; }
+    .bajtik .dym { opacity: 0; }
+    .bajtik .dym circle { animation: dym 4s ease-out infinite; }
+    .bajtik .dym circle:nth-child(2) { animation-delay: 1.3s; }
+    .bajtik .dym circle:nth-child(3) { animation-delay: 2.6s; }
+    .bajtik .dym { opacity: 1; }
+    .bajtik .oblak { opacity: 0; }
+        /* víčka: výchozí ospalost, mrknutí a postupné „zhulení" */
+    .bajtik .vicko { transform-box: fill-box; transform-origin: top; transition: transform 0.9s ease-in-out; }
+    .bajtik .hrana { transition: transform 0.9s ease-in-out; }
+    .bajtik .led { transition: fill 1.5s ease-in-out; }
+    .bajtik.zhuleny-1 .vicko { transform: scaleY(1.35); }
+    .bajtik.zhuleny-1 .hrana { transform: translateY(2px); }
+    .bajtik.zhuleny-1 .led { fill: #c9e6a8; }
+    .bajtik.zhuleny-2 .vicko { transform: scaleY(1.55); }
+    .bajtik.zhuleny-2 .hrana { transform: translateY(3.3px); }
+    .bajtik.zhuleny-2 .led { fill: #e8c7a0; }
+    .bajtik.zhuleny-3 .vicko { transform: scaleY(1.7); }
+    .bajtik.zhuleny-3 .hrana { transform: translateY(4.2px); }
+    .bajtik.zhuleny-3 .led { fill: #f2a99a; }
+    .bajtik.mrk .vicko { transition: transform 0.12s ease-in; transform: scaleY(1.85) !important; }
+    .bajtik.mrk .hrana { transition: transform 0.12s ease-in; transform: translateY(5px) !important; }
+
+    /* robotí doplňky */
+    .bajtik .antena { animation: blik 1.6s steps(1) infinite; }
+    @keyframes blik { 0%,60% { opacity: 1; } 61%,100% { opacity: 0.2; } }
+    .bajtik .ruka { transform-origin: 66px 68px; transition: transform 1.3s cubic-bezier(.45,.05,.35,1); }
+    .bajtik.potah .ruka { transform: translate(-10px, -17px) rotate(-62deg); }
+    .bajtik.zhavi .zar { animation: zhavi 0.7s ease-in-out 2 alternate; }
+    .bajtik .oblak { transform-origin: 45px 44px; }
+    .bajtik.vydech .oblak { animation: oblak 5s ease-out forwards; }
+    @keyframes zhavi { from { r: 2.8px; fill: #ff6a2b; } to { r: 4.2px; fill: #ffd04a; } }
+
+    @keyframes prochazka {
+      0%   { transform: translateX(-100px) scaleX(1); }
+      49%  { transform: translateX(calc(100vw + 10px)) scaleX(1); }
+      50%  { transform: translateX(calc(100vw + 10px)) scaleX(-1); }
+      99%  { transform: translateX(-100px) scaleX(-1); }
+      100% { transform: translateX(-100px) scaleX(1); }
+    }
+    .bajtik.stoji, .bajtik.stoji .telo, .bajtik.stoji .noha-l, .bajtik.stoji .noha-p { animation-play-state: paused; }
+    @keyframes houpani { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+    @keyframes krok { 0%,100% { transform: rotate(14deg); } 50% { transform: rotate(-14deg); } }
+    @keyframes dym {
+      0%   { transform: translate(0, 0) scale(0.4); opacity: 0.5; }
+      100% { transform: translate(8px, -40px) scale(1.6); opacity: 0; }
+    }
+    @keyframes oblak {
+      0%   { transform: scale(0.2); opacity: 0; }
+      12%  { transform: scale(1.6); opacity: 0.95; }
+      45%  { transform: translate(-3px, -8px) scale(2.3); opacity: 0.9; }
+      100% { transform: translate(-8px, -45px) scale(3.2); opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .bajtik, .bajtik * { animation: none !important; }
+    }
+
     @keyframes priplouti {
       from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -426,6 +504,145 @@
 
       o.addEventListener('click', function () {
         if (o.classList.contains('vibruje')) zastav(); else spust();
+      });
+    })();
+  </script>
+
+
+  <script>
+    // Nuly a jedničky v antracitové hlavičce
+    (function () {
+      var h = document.querySelector('.hlavicka');
+      if (!h) return;
+      var vrstva = document.createElement('div');
+      vrstva.className = 'cisilka';
+      vrstva.setAttribute('aria-hidden', 'true');
+      h.prepend(vrstva);
+      for (var i = 0; i < 40; i++) {
+        var z = document.createElement('span');
+        z.textContent = Math.random() < 0.5 ? '0' : '1';
+        z.style.left = (Math.random() * 100) + '%';
+        z.style.fontSize = (14 + Math.random() * 24) + 'px';
+        z.style.animationDuration = (7 + Math.random() * 9) + 's';
+        z.style.animationDelay = (-Math.random() * 16) + 's';
+        z.style.setProperty('--pruhlednost', (0.08 + Math.random() * 0.14).toFixed(2));
+        vrstva.appendChild(z);
+      }
+      setInterval(function () {
+        var n = vrstva.children[Math.floor(Math.random() * vrstva.children.length)];
+        n.textContent = n.textContent === '0' ? '1' : '0';
+      }, 250);
+    })();
+  </script>
+
+
+  <!-- Bajtík: originální postavička, po kliknutí si potáhne -->
+  <div class="bajtik" title="Bajtík" aria-hidden="true">
+    <svg class="telo" viewBox="0 0 90 110" xmlns="http://www.w3.org/2000/svg">
+      <!-- anténa -->
+      <line x1="45" y1="4" x2="45" y2="12" stroke="#5b6166" stroke-width="2"/>
+      <circle class="antena" cx="45" cy="4" r="2.6" fill="#ff5a4f"/>
+      <!-- nohy: kovové písty -->
+      <g class="noha-l"><rect x="34" y="86" width="8" height="16" rx="1" fill="#6b7177" stroke="#3f4448" stroke-width="1.2"/><rect x="36" y="92" width="4" height="2" fill="#3f4448"/><rect x="29" y="101" width="15" height="5" rx="1" fill="#4a4f53"/></g>
+      <g class="noha-p"><rect x="48" y="86" width="8" height="16" rx="1" fill="#6b7177" stroke="#3f4448" stroke-width="1.2"/><rect x="50" y="92" width="4" height="2" fill="#3f4448"/><rect x="46" y="101" width="15" height="5" rx="1" fill="#4a4f53"/></g>
+      <!-- tělo: kovová skříň s nýty -->
+      <rect x="24" y="60" width="42" height="29" rx="2" fill="#9aa0a5" stroke="#3f4448" stroke-width="2"/>
+      <circle cx="28" cy="64" r="1.3" fill="#3f4448"/><circle cx="62" cy="64" r="1.3" fill="#3f4448"/>
+      <circle cx="28" cy="85" r="1.3" fill="#3f4448"/><circle cx="62" cy="85" r="1.3" fill="#3f4448"/>
+      <rect x="32" y="67" width="20" height="2.5" fill="#3f4448"/>
+      <rect x="32" y="72" width="20" height="2.5" fill="#3f4448"/>
+      <rect x="32" y="77" width="12" height="2.5" fill="#3f4448"/>
+      <circle cx="57" cy="79" r="3" fill="#4cd964" stroke="#3f4448" stroke-width="1"/>
+      <!-- levá ruka: článková s klepetem -->
+      <g>
+        <rect x="16" y="66" width="9" height="5" fill="#6b7177" stroke="#3f4448" stroke-width="1"/>
+        <circle cx="16" cy="68.5" r="2.5" fill="#4a4f53"/>
+        <rect x="12" y="70" width="5" height="10" fill="#6b7177" stroke="#3f4448" stroke-width="1"/>
+        <path d="M11 80 L10 85 M18 80 L19 85" stroke="#3f4448" stroke-width="2" stroke-linecap="round"/>
+      </g>
+      <!-- hlava: šedý monitor se šrouby -->
+      <rect x="14" y="12" width="62" height="44" rx="3" fill="#7d8388" stroke="#3f4448" stroke-width="2"/>
+      <circle cx="18" cy="16" r="1.3" fill="#3f4448"/><circle cx="72" cy="16" r="1.3" fill="#3f4448"/>
+      <circle cx="18" cy="52" r="1.3" fill="#3f4448"/><circle cx="72" cy="52" r="1.3" fill="#3f4448"/>
+      <rect x="21" y="18" width="48" height="32" rx="2" fill="#2b3034"/>
+      <rect x="38" y="56" width="14" height="5" fill="#5b6166"/>
+      <!-- ospalé robotí oči (LED) -->
+      <g class="vicka">
+        <rect class="led" x="28" y="29" width="13" height="10" rx="2" fill="#9ff0c0"/>
+        <rect class="led" x="49" y="29" width="13" height="10" rx="2" fill="#9ff0c0"/>
+        <rect x="32" y="33" width="5" height="5" fill="#1b4d33"/>
+        <rect x="53" y="33" width="5" height="5" fill="#1b4d33"/>
+        <!-- těžká kovová víčka -->
+        <rect class="vicko" x="27" y="28" width="15" height="6" fill="#5b6166"/>
+        <rect class="vicko" x="48" y="28" width="15" height="6" fill="#5b6166"/>
+        <line class="hrana" x1="27" y1="34" x2="42" y2="34" stroke="#3f4448" stroke-width="1.4"/>
+        <line class="hrana" x1="48" y1="34" x2="63" y2="34" stroke="#3f4448" stroke-width="1.4"/>
+      </g>
+      <!-- pusa z LED bodů -->
+      <g fill="#9ff0c0">
+        <rect x="36" y="43" width="3" height="2"/><rect x="40" y="44" width="3" height="2"/>
+        <rect x="44" y="44.5" width="3" height="2"/><rect x="48" y="44" width="3" height="2"/>
+        <rect x="52" y="43" width="3" height="2"/>
+      </g>
+      <!-- pravá ruka s jointem (vykreslená až po hlavě, takže při potáhnutí je před obličejem) -->
+      <g class="ruka">
+        <rect x="65" y="66" width="9" height="5" fill="#6b7177" stroke="#3f4448" stroke-width="1"/>
+        <circle cx="74" cy="68.5" r="2.5" fill="#4a4f53"/>
+        <rect x="73" y="57" width="5" height="12" fill="#6b7177" stroke="#3f4448" stroke-width="1"/>
+        <!-- joint: výrazný kornoutek -->
+        <g transform="rotate(-15 76 53)">
+          <path d="M66 51.2 L89 49.5 L89 56.5 L66 54.8 Z" fill="#fbf7ea" stroke="#8a8270" stroke-width="0.8"/>
+          <rect x="66" y="51.2" width="5" height="3.6" fill="#c9b48a"/>
+          <line x1="74" y1="51" x2="74" y2="55.3" stroke="#d8d0bb" stroke-width="0.6"/>
+          <line x1="80" y1="50.6" x2="80" y2="55.7" stroke="#d8d0bb" stroke-width="0.6"/>
+          <path d="M89 49.5 Q92 53 89 56.5" fill="#6b6b6b"/>
+          <circle class="zar" cx="90.3" cy="53" r="2.8" fill="#ff6a2b"/>
+        </g>
+        <!-- klepeto drží joint -->
+        <path d="M73 57 L71 52 M78 57 L80 52" stroke="#3f4448" stroke-width="2.2" stroke-linecap="round"/>
+        <g class="dym">
+          <circle cx="90" cy="45" r="3.2" fill="#c9cdd1"/>
+          <circle cx="90" cy="45" r="3.2" fill="#c9cdd1"/>
+          <circle cx="90" cy="45" r="3.2" fill="#c9cdd1"/>
+        </g>
+      </g>
+      <!-- oblak po potáhnutí -->
+      <g class="oblak">
+        <circle cx="45" cy="44" r="7" fill="#e3e6e9"/>
+        <circle cx="36" cy="38" r="8" fill="#dcdfe2"/>
+        <circle cx="54" cy="37" r="7.5" fill="#e3e6e9"/>
+        <circle cx="45" cy="31" r="8.5" fill="#d7dade"/>
+        <circle cx="31" cy="47" r="6.5" fill="#e3e6e9"/>
+        <circle cx="59" cy="47" r="6.5" fill="#dcdfe2"/>
+        <circle cx="40" cy="52" r="6" fill="#d7dade"/>
+        <circle cx="51" cy="53" r="6" fill="#e3e6e9"/>
+      </g>
+    </svg>
+  </div>
+
+  <script>
+    // Bajtík: po kliknutí se zastaví, potáhne si a vyfoukne obláček
+    (function () {
+      var b = document.querySelector('.bajtik');
+      if (!b) return;
+      b.addEventListener('click', function () {
+        if (b.classList.contains('stoji')) return;
+        b.classList.add('stoji');
+        setTimeout(function () { b.classList.add('potah'); }, 300);                 // ruka jede k puse
+        setTimeout(function () { b.classList.add('zhavi'); }, 1700);                // potah, konec žhne
+        setTimeout(function () { b.classList.remove('potah'); }, 3300);             // ruka dolů
+        setTimeout(function () { b.classList.add('vydech'); }, 3600);               // vyfouknutí
+        setTimeout(function () { b.classList.add('mrk'); }, 2300);                  // mrknutí při potahu
+        setTimeout(function () { b.classList.remove('mrk'); }, 2550);
+        setTimeout(function () {                                                    // po výdechu víc zhulené oči
+          var u = Math.min(3, (parseInt(b.dataset.uroven || '0', 10) + 1));
+          b.classList.remove('zhuleny-1', 'zhuleny-2', 'zhuleny-3');
+          b.classList.add('zhuleny-' + u);
+          b.dataset.uroven = u;
+        }, 4200);
+        setTimeout(function () { b.classList.remove('zhavi'); }, 6300);
+        setTimeout(function () { b.classList.remove('stoji'); }, 8400);             // mrak se rozplynul, jde dál
+        setTimeout(function () { b.classList.remove('vydech'); }, 8700);             // zase na procházku
       });
     })();
   </script>
